@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,16 +11,17 @@
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(to right, #f3f4f6, #e0e7ff);
-      margin: 0; padding: 20px;
+      margin: 0; 
+      padding: 20px;
       color: #1f2937;
     }
 
-    h1 {
-      font-weight: 700;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-      text-align: center;
-      color: #111827;
+    h1 { 
+      font-weight: 700; 
+      font-size: 2rem; 
+      margin-bottom: 0.5rem; 
+      text-align: center; 
+      color: #111827; 
     }
 
     .client-info {
@@ -56,11 +58,11 @@
     #search:focus { border-color: #3b82f6; box-shadow: 0 0 12px #3b82f6; }
 
     #app-list {
-      max-width: 600px;
+      max-width: 1200px; /* wider for desktops */
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
     }
 
     .skeleton-card {
@@ -119,7 +121,18 @@
     .disclaimer { margin-top: 40px; text-align: center; font-size: 0.95rem; color: #6b7280; animation: fadeIn 2s ease-in-out; }
     @keyframes fadeIn { 0% {opacity: 0;} 100% {opacity: 1;} }
 
-    @media (min-width: 768px) { #app-list { grid-template-columns: 1fr 1fr; gap: 24px; } }
+    /* Extra styling for larger screens */
+    @media (min-width: 768px) {
+      body { padding: 30px; }
+      .client-info { padding: 30px 35px; font-size: 1.2rem; }
+    }
+    @media (min-width: 1024px) {
+      body { padding: 40px; }
+      .client-info { padding: 35px 40px; font-size: 1.25rem; }
+      .card { padding: 25px 30px; }
+      .task-title { font-size: 1.5rem; }
+      .info-row { font-size: 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -135,77 +148,76 @@
 <div class="disclaimer">📌 Developed by Johan de Beer. Data updates live from secure cloud storage.</div>
 
 <script>
-const CSV_URL = 'https://raw.githubusercontent.com/johandebeer21/Tracker-Demo/main/tracker2.csv';
-let applications = [];
+  const CSV_URL = 'https://raw.githubusercontent.com/johandebeer21/Tracker-Demo/refs/heads/main/tracker2.csv';
+  let applications = [];
 
-// ✅ Parse CSV and ignore completely empty rows
-function parseCSV(text) {
-  const lines = text.trim().split('\n').filter(line => line.trim() !== '');
-  const headers = lines.shift().split(',').map(h => h.trim());
-  return lines
-    .map(line => {
-      const data = line.split(',').map(d => d.trim());
-      const obj = {};
-      headers.forEach((h,i) => obj[h] = data[i] || '');
-      return obj;
-    })
-    .filter(app => app['Task']); // only keep rows with a Task
-}
+  function parseCSV(text) {
+    const lines = text.trim().split('\n').filter(line => line.trim() !== '');
+    const headers = lines.shift().split(',').map(h => h.trim());
+    return lines
+      .map(line => {
+        const data = line.split(',').map(d => d.trim());
+        const obj = {};
+        headers.forEach((h,i) => obj[h] = data[i] || '');
+        return obj;
+      })
+      .filter(app => app['Task']);
+  }
 
-const appList = document.getElementById('app-list');
-const searchInput = document.getElementById('search');
-const clientInfoDiv = document.getElementById('client-info');
+  const appList = document.getElementById('app-list');
+  const searchInput = document.getElementById('search');
+  const clientInfoDiv = document.getElementById('client-info');
 
-function renderClientInfo(apps) {
-  if (!apps.length) { clientInfoDiv.textContent = 'No client information found.'; return; }
-  const firstWithName = apps.find(a => a['Name'] || a['Surname'] || a['Application type']) || apps[0];
-  clientInfoDiv.innerHTML = `
-    <div><strong>Client Name:</strong> ${firstWithName['Name'] || '-'}</div>
-    <div><strong>Client Surname:</strong> ${firstWithName['Surname'] || '-'}</div>
-    <div><strong>Application Type:</strong> ${firstWithName['Application type'] || '-'}</div>
-  `;
-}
-
-function renderApps(list) {
-  if (!list.length) { appList.innerHTML = '<p>No applications found.</p>'; return; }
-  appList.innerHTML = '';
-  list.forEach((app,i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.animationDelay = `${i*0.1}s`;
-    const statusClass = app['Status'] ? app['Status'].replace(/\s+/g,'-') : 'Pending';
-    card.innerHTML = `
-      <h3 class="task-title">${app['Task']}</h3>
-      <div class="info-row"><span>Status:</span> <span class="status ${statusClass}">${app['Status']}</span></div>
-      <div class="info-row"><span>Assignee:</span> <span>${app['Assignee'] || '-'}</span></div>
-      <div class="info-row"><span>Due date:</span> <span>${app['Due date'] || '-'}</span></div>
-      <div class="info-row"><span>Updated at:</span> <span>${app['Updated at'] || '-'}</span></div>
+  function renderClientInfo(apps) {
+    if (!apps.length) { clientInfoDiv.textContent = 'No client information found.'; return; }
+    const firstWithName = apps.find(a => a['Name'] || a['Surname'] || a['Application type']) || apps[0];
+    clientInfoDiv.innerHTML = `
+      <div><strong>Client Name:</strong> ${firstWithName['Name'] || '-'}</div>
+      <div><strong>Client Surname:</strong> ${firstWithName['Surname'] || '-'}</div>
+      <div><strong>Application Type:</strong> ${firstWithName['Application type'] || '-'}</div>
     `;
-    appList.appendChild(card);
+  }
+
+  function renderApps(list) {
+    if (!list.length) { appList.innerHTML = '<p>No applications found.</p>'; return; }
+    appList.innerHTML = '';
+    list.forEach((app,i) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.animationDelay = `${i*0.1}s`;
+      const statusClass = app['Status'] ? app['Status'].replace(/\s+/g,'-') : 'Pending';
+      card.innerHTML = `
+        <h3 class="task-title">${app['Task']}</h3>
+        <div class="info-row"><span>Status:</span> <span class="status ${statusClass}">${app['Status']}</span></div>
+        <div class="info-row"><span>Assignee:</span> <span>${app['Assignee'] || '-'}</span></div>
+        <div class="info-row"><span>Due date:</span> <span>${app['Due date'] || '-'}</span></div>
+        <div class="info-row"><span>Updated at:</span> <span>${app['Updated at'] || '-'}</span></div>
+      `;
+      appList.appendChild(card);
+    });
+  }
+
+  function fetchData() {
+    appList.innerHTML = '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>';
+    clientInfoDiv.textContent = 'Loading client info...';
+    fetch(CSV_URL + '?cacheBust=' + Date.now())
+      .then(res => res.ok ? res.text() : Promise.reject('Failed to fetch'))
+      .then(text => {
+        applications = parseCSV(text);
+        renderClientInfo(applications);
+        renderApps(applications);
+      })
+      .catch(err => { appList.innerHTML = '<p>Failed to load data.</p>'; clientInfoDiv.textContent = ''; console.error(err); });
+  }
+
+  searchInput.addEventListener('input', () => {
+    const term = searchInput.value.toLowerCase();
+    const filtered = applications.filter(app => app['Task'].toLowerCase().includes(term));
+    renderApps(filtered);
   });
-}
 
-function fetchData() {
-  appList.innerHTML = '<div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>';
-  clientInfoDiv.textContent = 'Loading client info...';
-  fetch(CSV_URL + '?cacheBust=' + Date.now())
-    .then(res => res.ok ? res.text() : Promise.reject('Failed to fetch'))
-    .then(text => {
-      applications = parseCSV(text);
-      renderClientInfo(applications);
-      renderApps(applications);
-    })
-    .catch(err => { appList.innerHTML = '<p>Failed to load data.</p>'; clientInfoDiv.textContent = ''; console.error(err); });
-}
-
-searchInput.addEventListener('input', () => {
-  const term = searchInput.value.toLowerCase();
-  const filtered = applications.filter(app => app['Task'].toLowerCase().includes(term));
-  renderApps(filtered);
-});
-
-fetchData();
-setInterval(fetchData, 60000);
+  fetchData();
+  setInterval(fetchData, 60000);
 </script>
 
 </body>
