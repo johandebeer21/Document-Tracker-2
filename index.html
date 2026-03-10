@@ -3,114 +3,119 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document Tracker | Official Portal</title>
+  <title>Document Tracker | Official Client Portal</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     :root {
-      --primary-done: #10b981;    /* Green */
-      --in-progress: #2563eb;     /* Professional Blue */
-      --not-started: #dc2626;     /* Formal Red */
-      --brand-dark: #0f172a;
-      --bg-page: #f8fafc;
-      --card-bg: #ffffff;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
+      --clr-done: #10b981;        /* Green */
+      --clr-progress: #2563eb;    /* Corporate Blue */
+      --clr-not-started: #dc2626; /* Alert Red */
+      --clr-dark: #0f172a;
+      --clr-bg: #f8fafc;
+      --clr-border: #e2e8f0;
+      --clr-text-muted: #64748b;
     }
 
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bg-page); margin: 0; color: #1e293b; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--clr-bg); margin: 0; color: #1e293b; -webkit-font-smoothing: antialiased; }
 
-    /* Pulse Animation */
+    /* Pulsating Blue Animation for In-Progress steps */
     @keyframes pulse-blue {
-      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-      70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); transform: scale(1); }
+      70% { box-shadow: 0 0 0 12px rgba(37, 99, 235, 0); transform: scale(1.05); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); transform: scale(1); }
     }
 
-    .top-nav { background-color: var(--brand-dark); color: #ffffff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
-    .nav-brand { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; }
+    .nav { background: var(--clr-dark); color: #fff; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .nav-logo { font-weight: 800; font-size: 1rem; letter-spacing: 1px; }
+    .nav-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; }
 
-    .wrapper { padding: 20px; max-width: 1000px; margin: 0 auto; }
-    .card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px; }
+    .container { padding: 20px; max-width: 900px; margin: 0 auto; }
+    .card { background: #fff; border-radius: 12px; border: 1px solid var(--clr-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 24px; overflow: hidden; }
 
-    .status-header { padding: 30px 24px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
-    .status-badge { display: inline-block; background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; }
-    .status-header h1 { margin: 0 0 16px 0; font-size: 2.2rem; font-weight: 800; text-transform: uppercase; color: var(--brand-dark); }
+    /* Top Summary Section */
+    .header-section { padding: 40px 24px; text-align: center; border-bottom: 1px solid var(--clr-border); }
+    .live-badge { display: inline-block; background: #f1f5f9; padding: 5px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+    .main-status-text { margin: 0 0 20px 0; font-size: 2.4rem; font-weight: 900; text-transform: uppercase; color: var(--clr-dark); letter-spacing: -1px; }
+    .client-info-pills { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .pill { background: var(--clr-bg); border: 1px solid var(--clr-border); padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: var(--clr-text-muted); }
+    .pill strong { color: var(--clr-dark); }
+
+    /* Stepper Visualization */
+    .stepper-box { padding: 35px 24px; }
+    .stepper { position: relative; padding-left: 20px; border-left: 3px solid var(--clr-border); display: flex; flex-direction: column; gap: 30px; margin-left: 10px; }
     
-    .meta-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-    .meta-box { background: var(--bg-page); padding: 8px 16px; border-radius: 6px; border: 1px solid var(--border); font-size: 0.85rem; }
-
-    /* Stepper with Pulse */
-    .stepper-container { padding: 30px 24px; }
-    .stepper { display: flex; flex-direction: column; position: relative; padding-left: 20px; border-left: 2px solid var(--border); gap: 25px; margin-left: 10px; }
+    .step-item { display: flex; align-items: center; position: relative; margin-left: -33px; }
+    .step-dot { width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 3px solid var(--clr-border); z-index: 5; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
     
-    .step { display: flex; align-items: flex-start; position: relative; margin-left: -33px; }
-    .step-circle { width: 24px; height: 24px; background: white; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 2; transition: all 0.3s ease; }
+    .step-item.done .step-dot { background: var(--clr-done); border-color: var(--clr-done); color: #fff; font-size: 14px; font-weight: bold; }
+    .step-item.in-progress .step-dot { border-color: var(--clr-progress); border-width: 4px; animation: pulse-blue 2s infinite; }
+    .step-item.not-started .step-dot { border-color: var(--clr-border); }
+
+    .step-label { margin-left: 18px; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; color: var(--clr-dark); }
+    .step-item.not-started .step-label { color: var(--clr-text-muted); }
+
+    /* Bottom Grid Sections */
+    .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+    @media (min-width: 768px) { .grid { grid-template-columns: 1.8fr 1fr; } }
+
+    .section-title { background: #fcfdfe; padding: 16px 24px; border-bottom: 1px solid var(--clr-border); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--clr-dark); letter-spacing: 1px; }
+
+    /* Timeline History Feed */
+    .history-feed { padding: 24px; }
+    .update-group { margin-bottom: 30px; }
+    .update-header { font-weight: 900; font-size: 0.85rem; color: var(--clr-dark); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; gap: 10px; }
+
+    .event-card { display: flex; margin-bottom: 20px; align-items: flex-start; }
+    .event-dates { min-width: 140px; font-size: 0.72rem; font-weight: 700; color: var(--clr-text-muted); line-height: 1.5; text-transform: uppercase; }
+    .event-body { display: flex; flex-direction: column; }
+    .event-task-name { font-weight: 800; font-size: 0.95rem; color: var(--clr-dark); margin-bottom: 4px; }
     
-    .step.done .step-circle { background: var(--primary-done); border-color: var(--primary-done); color: white; font-size: 12px; }
-    .step.in-progress .step-circle { border-color: var(--in-progress); border-width: 4px; animation: pulse-blue 2s infinite; }
-    
-    .step-content { margin-left: 20px; }
-    .step-title { font-weight: 700; font-size: 0.9rem; color: var(--brand-dark); text-transform: uppercase; }
+    /* Status Text Colors */
+    .status-txt { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+    .status-txt.done { color: var(--clr-done); }
+    .status-txt.progress { color: var(--clr-progress); }
+    .status-txt.not { color: var(--clr-not-started); }
 
-    .bottom-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 768px) { .bottom-grid { grid-template-columns: 2fr 1fr; } }
-
-    .section-title { font-size: 0.9rem; font-weight: 700; color: var(--brand-dark); border-bottom: 1px solid var(--border); padding: 15px 24px; background: #f8fafc; text-transform: uppercase; }
-
-    /* Timeline History */
-    .events-feed { padding: 24px; }
-    .day-group { margin-bottom: 30px; }
-    .day-header { font-weight: 800; font-size: 0.9rem; color: var(--brand-dark); margin-bottom: 15px; padding-bottom: 5px; border-bottom: 2px solid #f1f5f9; display: flex; align-items: center; gap: 8px; }
-
-    .event-row { display: flex; margin-bottom: 18px; align-items: flex-start; }
-    .event-date-col { min-width: 130px; font-size: 0.75rem; line-height: 1.4; color: var(--text-muted); font-weight: 600; }
-    .event-details { display: flex; flex-direction: column; }
-    .event-name { font-weight: 700; font-size: 0.95rem; color: var(--brand-dark); }
-    
-    /* Status Labels */
-    .st-tag { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-top: 4px; padding: 2px 0; }
-    .st-done { color: var(--primary-done); }
-    .st-progress { color: var(--in-progress); }
-    .st-not { color: var(--not-started); }
-
-    .sidebar-details { padding: 20px 24px; }
-    .detail-row { margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; }
-    .detail-label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    .detail-value { font-size: 0.9rem; font-weight: 700; display: block; margin-top: 2px; }
+    /* Sidebar Case File */
+    .case-info { padding: 24px; }
+    .info-row { margin-bottom: 18px; }
+    .info-label { font-size: 0.65rem; font-weight: 700; color: var(--clr-text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
+    .info-value { font-size: 1rem; font-weight: 700; color: var(--clr-dark); }
   </style>
 </head>
 <body>
 
-<nav class="top-nav">
-  <div class="nav-brand">DOCUMENT TRACKER</div>
-  <div class="nav-portal">CLIENT ACCESS</div>
+<nav class="nav">
+  <div class="nav-logo">DOCUMENT TRACKER</div>
+  <div class="nav-label">Client Portal</div>
 </nav>
 
-<div class="wrapper">
+<div class="container">
   <div class="card">
-    <div class="status-header">
-      <div class="status-badge">Live Status Report</div>
-      <h1 id="main-status">...</h1>
-      <div class="meta-grid">
-        <div class="meta-box">Client: <strong id="head-client">---</strong></div>
-        <div class="meta-box">Ref: <strong id="head-ref">---</strong></div>
+    <div class="header-section">
+      <div class="live-badge">Live Document Status</div>
+      <h1 id="top-status">FETCHING...</h1>
+      <div class="client-info-pills">
+        <div class="pill">Client: <strong id="c-name">---</strong></div>
+        <div class="pill">Ref: <strong id="c-ref">---</strong></div>
       </div>
     </div>
-    <div class="stepper-container">
-      <div class="stepper" id="stepper-box"></div>
+    <div class="stepper-box">
+      <div class="stepper" id="stepper-ui"></div>
     </div>
   </div>
 
-  <div class="bottom-grid">
+  <div class="grid">
     <div class="card">
       <h3 class="section-title">Timeline History</h3>
-      <div class="events-feed" id="history-box"></div>
+      <div class="history-feed" id="history-ui"></div>
     </div>
+
     <div class="card">
       <h3 class="section-title">Case File Info</h3>
-      <div class="sidebar-details" id="sidebar-box"></div>
+      <div class="case-info" id="case-ui"></div>
     </div>
   </div>
 </div>
@@ -119,84 +124,94 @@
   const CSV_URL = 'https://raw.githubusercontent.com/johandebeer21/Tracker-Demo/refs/heads/main/tracker2.csv';
 
   function parseCSV(text) {
-    const lines = text.trim().split('\n').filter(l => l.trim());
+    const lines = text.trim().split('\n').filter(row => row.trim());
     const headers = lines.shift().split(',').map(h => h.trim());
     return lines.map(line => {
-      const data = line.split(',').map(d => d.trim());
+      const values = line.split(',').map(v => v.trim());
       let obj = {};
-      headers.forEach((h, i) => obj[h] = data[i] || '');
+      headers.forEach((h, i) => obj[h] = values[i] || '');
       return obj;
     });
   }
 
-  function getStatusStyle(status) {
-    if (status === 'Done') return 'st-done';
-    if (status === 'In progress') return 'st-progress';
-    return 'st-not';
+  function getStatusClass(status) {
+    if (status === 'Done') return 'done';
+    if (status === 'In progress') return 'progress';
+    return 'not';
   }
 
   function render(data) {
+    if (!data || data.length === 0) return;
+
+    // 1. Core Info (from first row)
     const client = data[0];
-    const activeTasks = data.filter(d => d.Status === 'Done' || d.Status === 'In progress');
-    const currentTask = activeTasks.length > 0 ? activeTasks[activeTasks.length - 1] : data[0];
+    const fullName = `${client.Name} ${client.Surname}`;
+    const refCode = `${client.Surname.toUpperCase()}-N313`; // Matches your ref pattern
 
-    document.getElementById('main-status').textContent = currentTask.Status;
-    document.getElementById('head-client').textContent = `${client.Name} ${client.Surname}`;
-    document.getElementById('head-ref').textContent = `${client.Surname.toUpperCase()}-313`;
+    // 2. Identify Current Status (Last task that isn't "Not started")
+    const activeTasks = data.filter(d => d.Status !== 'Not started');
+    const latestTask = activeTasks.length > 0 ? activeTasks[activeTasks.length - 1] : data[0];
 
-    document.getElementById('sidebar-box').innerHTML = `
-      <div class="detail-row"><span class="detail-label">Application</span><span class="detail-value">${client['Application type']}</span></div>
-      <div class="detail-row"><span class="detail-label">Assigned To</span><span class="detail-value">${currentTask['Assignee']}</span></div>
-    `;
+    document.getElementById('top-status').textContent = latestTask.Status;
+    document.getElementById('c-name').textContent = fullName;
+    document.getElementById('c-ref').textContent = refCode;
 
-    // Stepper
-    const stepperBox = document.getElementById('stepper-box');
-    stepperBox.innerHTML = '';
+    // 3. Stepper Logic
+    const stepperContainer = document.getElementById('stepper-ui');
+    stepperContainer.innerHTML = '';
     data.forEach(item => {
-      const stepDiv = document.createElement('div');
       const statusClass = item.Status === 'Done' ? 'done' : (item.Status === 'In progress' ? 'in-progress' : 'not-started');
-      stepDiv.className = `step ${statusClass}`;
-      stepDiv.innerHTML = `<div class="step-circle">${item.Status === 'Done' ? '✓' : ''}</div>
-                           <div class="step-content"><div class="step-title">${item.Task}</div></div>`;
-      stepperBox.appendChild(stepDiv);
+      const stepHtml = `
+        <div class="step-item ${statusClass}">
+          <div class="step-dot">${item.Status === 'Done' ? '✓' : ''}</div>
+          <div class="step-label">${item.Task}</div>
+        </div>`;
+      stepperContainer.innerHTML += stepHtml;
     });
 
-    // History
-    const historyBox = document.getElementById('history-box');
-    historyBox.innerHTML = '';
-    let lastUpdateDate = "";
+    // 4. Timeline History (Reverse order for Feed)
+    const historyContainer = document.getElementById('history-ui');
+    historyContainer.innerHTML = '';
+    let currentUpdateDate = "";
 
     [...data].reverse().forEach(item => {
-      if (item['Updated at'] && item['Updated at'] !== lastUpdateDate) {
-        const group = document.createElement('div');
-        group.className = 'day-group';
-        group.innerHTML = `<div class="day-header">🗓️ UPDATED: ${item['Updated at']}</div>`;
-        historyBox.appendChild(group);
-        lastUpdateDate = item['Updated at'];
+      // Create date group header if Updated at exists
+      const updateAt = item['Updated at'] || "AWAITING UPDATE";
+      if (updateAt !== currentUpdateDate) {
+        historyContainer.innerHTML += `<div class="update-header">🗓️ UPDATED: ${updateAt}</div>`;
+        currentUpdateDate = updateAt;
       }
 
-      const row = document.createElement('div');
-      row.className = 'event-row';
-      row.innerHTML = `
-        <div class="event-date-col">
-          <div>DUE: ${item['Due date']}</div>
-        </div>
-        <div class="event-details">
-          <span class="event-name">${item.Task}</span>
-          <span class="st-tag ${getStatusStyle(item.Status)}">${item.Status}</span>
+      const statusCls = getStatusClass(item.Status);
+      const entryHtml = `
+        <div class="event-card">
+          <div class="event-dates">
+            <div>DUE: ${item['Due date'] || '---'}</div>
+          </div>
+          <div class="event-body">
+            <span class="event-task-name">${item.Task}</span>
+            <span class="status-txt ${statusCls}">${item.Status}</span>
+          </div>
         </div>`;
-      historyBox.lastElementChild.appendChild(row);
+      historyContainer.innerHTML += entryHtml;
     });
+
+    // 5. Case File Info
+    document.getElementById('case-ui').innerHTML = `
+      <div class="info-row"><span class="info-label">Application</span><span class="info-value">${client['Application type']}</span></div>
+      <div class="info-row"><span class="info-label">Assigned To</span><span class="info-value">${latestTask['Assignee'] || 'Processing...'}</span></div>
+    `;
   }
 
-  function fetchData() {
-    fetch(CSV_URL + '?t=' + new Date().getTime())
-      .then(res => res.text())
-      .then(text => render(parseCSV(text)));
+  function start() {
+    fetch(CSV_URL + '?t=' + Date.now())
+      .then(r => r.text())
+      .then(txt => render(parseCSV(txt)))
+      .catch(err => console.error("Update failed:", err));
   }
 
-  fetchData();
-  setInterval(fetchData, 60000);
+  start();
+  setInterval(start, 60000); // Auto-refresh every 60 seconds
 </script>
 </body>
 </html>
