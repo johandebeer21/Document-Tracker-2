@@ -2,277 +2,276 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Application Tracker | Digital License Assist</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Application Tracker</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     :root {
-      --primary-color: #10b981; /* Green from your image */
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
+      --primary: #10b981;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-light: #64748b;
+      --border: #e2e8f0;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color);
+      background-color: var(--bg);
       margin: 0;
-      padding: 20px;
-      color: var(--text-main);
+      padding: 15px; /* Reduced padding for mobile */
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: hidden; /* Prevents side-scrolling */
     }
 
     .container {
-      max-width: 1000px;
+      max-width: 900px;
       margin: 0 auto;
+      width: 100%;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    /* Client Info Header Card */
+    /* Client Header */
     .client-header {
-      background: var(--card-bg);
+      background: var(--card);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      border-bottom: 3px solid var(--primary-color);
+      margin-bottom: 15px;
+      border-left: 5px solid var(--primary);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
-    .client-details h2 { margin: 0; font-size: 1.2rem; color: var(--text-main); }
-    .client-details p { margin: 4px 0 0; color: var(--text-muted); font-size: 0.9rem; }
+    .client-header h2 { margin: 0; font-size: 1.1rem; }
+    .client-header p { margin: 5px 0 0; color: var(--text-light); font-size: 0.85rem; }
 
-    /* The Stepper (Top Timeline) */
-    .stepper-container {
-      background: var(--card-bg);
+    /* Stepper - Mobile Scrollable, Desktop Fixed */
+    .stepper-wrapper {
+      background: var(--card);
       border-radius: 12px;
-      padding: 40px 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-bottom: 25px;
+      padding: 25px 15px;
+      margin-bottom: 15px;
+      overflow-x: auto; /* Allows swiping on small screens if steps are many */
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .stepper {
       display: flex;
       justify-content: space-between;
+      min-width: 500px; /* Ensures stepper doesn't crush on mobile */
       position: relative;
     }
 
-    .stepper-item {
+    .step {
       flex: 1;
       text-align: center;
       position: relative;
       z-index: 1;
     }
 
-    .stepper-item::before {
+    .step::before {
       content: "";
       position: absolute;
-      top: 15px;
+      top: 12px;
       left: -50%;
       width: 100%;
       height: 2px;
-      background: var(--border-color);
+      background: var(--border);
       z-index: -1;
     }
 
-    .stepper-item:first-child::before { display: none; }
+    .step:first-child::before { display: none; }
 
-    .step-counter {
-      width: 30px;
-      height: 30px;
+    .step-circle {
+      width: 24px;
+      height: 24px;
       background: #fff;
-      border: 2px solid var(--border-color);
+      border: 2px solid var(--border);
       border-radius: 50%;
+      margin: 0 auto 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 10px;
+      font-size: 10px;
       font-weight: bold;
-      transition: 0.3s;
     }
 
-    .stepper-item.active .step-counter {
-      background: var(--primary-color);
-      border-color: var(--primary-color);
-      color: white;
+    .step.done .step-circle { background: var(--primary); border-color: var(--primary); color: white; }
+    .step.done::before { background: var(--primary); }
+    
+    .step.active .step-circle {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
     }
 
-    .stepper-item.active::before { background: var(--primary-color); }
+    .step-label { font-size: 11px; font-weight: 600; color: var(--text-light); white-space: nowrap; }
+    .step.done .step-label, .step.active .step-label { color: var(--text); }
 
-    .step-name { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); }
-    .stepper-item.active .step-name { color: var(--text-main); }
-
-    /* Main Content Grid */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 350px;
-      gap: 20px;
+    /* Main Layout */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
-    .tracking-events, .shipping-details {
-      background: var(--card-bg);
+    @media (min-width: 768px) {
+      .main-content { flex-direction: row; }
+      .tracking-panel { flex: 2; }
+      .details-panel { flex: 1; }
+      .stepper-wrapper { overflow-x: hidden; }
+      .stepper { min-width: auto; }
+    }
+
+    .panel {
+      background: var(--card);
       border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 
-    h3 { font-size: 1rem; margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px; }
-
-    /* Vertical Timeline Events */
-    .event-list { position: relative; list-style: none; padding-left: 20px; }
-    .event-list::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 5px;
-      bottom: 5px;
-      width: 2px;
-      background: var(--border-color);
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
     }
 
-    .event-item { margin-bottom: 20px; position: relative; }
-    .event-item::after {
+    /* Event List */
+    .event {
+      position: relative;
+      padding-left: 30px;
+      padding-bottom: 25px;
+      border-left: 2px solid var(--border);
+      margin-left: 10px;
+    }
+
+    .event:last-child { border-left-color: transparent; }
+
+    .event::after {
       content: "";
       position: absolute;
-      left: -24px;
-      top: 5px;
-      width: 10px;
-      height: 10px;
-      background: var(--primary-color);
+      left: -7px;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
       border-radius: 50%;
+      border: 2px solid white;
     }
 
-    .event-date { font-weight: 700; font-size: 0.85rem; margin-bottom: 5px; display: block; }
-    .event-details { font-size: 0.9rem; color: var(--text-main); }
-    .event-time { color: var(--text-muted); font-size: 0.8rem; margin-right: 10px; }
+    .event-time { font-size: 0.75rem; font-weight: 700; color: var(--text); display: block; }
+    .event-desc { font-size: 0.85rem; margin-top: 4px; color: var(--text-light); }
+    .event-desc strong { color: var(--text); }
 
-    /* Shipping Details Table Style */
-    .detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.85rem; }
-    .detail-label { color: var(--text-muted); font-weight: 500; }
-    .detail-value { color: var(--text-main); font-weight: 600; text-align: right; }
+    /* Side Detail Rows */
+    .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.85rem; }
+    .row-label { color: var(--text-light); }
+    .row-value { font-weight: 600; }
 
-    @media (max-width: 768px) {
-      .main-grid { grid-template-columns: 1fr; }
-    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="client-header" id="client-header">
-    <div class="client-details">
-      <h2 id="client-name">Loading...</h2>
-      <p id="app-type">-</p>
-    </div>
-    <div style="text-align: right">
-      <small style="color: var(--text-muted)">Status</small>
-      <div id="overall-status" style="font-weight: 700; color: var(--primary-color)">-</div>
-    </div>
+  <div class="client-header">
+    <h2 id="c-name">Loading...</h2>
+    <p id="c-type">Please wait</p>
   </div>
 
-  <div class="stepper-container" id="stepper">
-    </div>
-
-  <div class="main-grid">
-    <section class="tracking-events">
-      <h3>Tracking Events</h3>
-      <div class="event-list" id="event-list">
-        </div>
-    </section>
-
-    <aside class="shipping-details">
-      <h3>Application Details</h3>
-      <div id="meta-details">
-        </div>
-    </aside>
+  <div class="stepper-wrapper">
+    <div class="stepper" id="step-container">
+      </div>
   </div>
 
-  <p style="text-align: center; color: #94a3b8; font-size: 0.8rem; margin-top: 30px;">
-    Developed by Johan de Beer • Updated Live
-  </p>
+  <div class="main-content">
+    <div class="panel tracking-panel">
+      <div class="panel-title">Tracking History</div>
+      <div id="event-container">
+        </div>
+    </div>
+
+    <div class="panel details-panel">
+      <div class="panel-title">Information</div>
+      <div id="info-container">
+        </div>
+    </div>
+  </div>
 </div>
 
 <script>
   const CSV_URL = 'https://raw.githubusercontent.com/johandebeer21/Tracker-Demo/refs/heads/main/tracker2.csv';
 
   function parseCSV(text) {
-    const lines = text.trim().split('\n').filter(line => line.trim() !== '');
+    const lines = text.trim().split('\n').filter(l => l.trim());
     const headers = lines.shift().split(',').map(h => h.trim());
     return lines.map(line => {
       const data = line.split(',').map(d => d.trim());
-      const obj = {};
+      let obj = {};
       headers.forEach((h, i) => obj[h] = data[i] || '');
       return obj;
-    }).filter(app => app['Task']);
+    });
   }
 
-  function renderUI(apps) {
-    if (!apps.length) return;
+  function updateTracker(data) {
+    if (!data.length) return;
+    const current = data[0];
 
-    // 1. Client Info
-    const client = apps[0];
-    document.getElementById('client-name').textContent = `${client['Name']} ${client['Surname']}`;
-    document.getElementById('app-type').textContent = client['Application type'];
-    
-    // 2. Build the Stepper (Using tasks as milestones)
-    const stepper = document.getElementById('stepper');
-    stepper.innerHTML = '';
-    apps.forEach((app, index) => {
-      const step = document.createElement('div');
-      step.className = `stepper-item ${app['Status'] === 'Done' ? 'active' : ''}`;
-      step.innerHTML = `
-        <div class="step-counter">${app['Status'] === 'Done' ? '✓' : index + 1}</div>
-        <div class="step-name">${app['Task']}</div>
+    // Header
+    document.getElementById('c-name').textContent = `${current.Name} ${current.Surname}`;
+    document.getElementById('c-type').textContent = current['Application type'];
+
+    // Stepper Logic
+    const stepBox = document.getElementById('step-container');
+    stepBox.innerHTML = '';
+    data.forEach((item, idx) => {
+      const div = document.createElement('div');
+      const isDone = item.Status === 'Done';
+      const isCurrent = item.Status === 'In-progress';
+      div.className = `step ${isDone ? 'done' : ''} ${isCurrent ? 'active' : ''}`;
+      div.innerHTML = `
+        <div class="step-circle">${isDone ? '✓' : idx + 1}</div>
+        <div class="step-label">${item.Task}</div>
       `;
-      stepper.appendChild(step);
+      stepBox.appendChild(div);
     });
 
-    // 3. Build Vertical Event Log (Most recent first)
-    const eventList = document.getElementById('event-list');
-    eventList.innerHTML = '';
-    [...apps].reverse().forEach(app => {
-      if(app['Status'] === 'Done' || app['Status'] === 'In-progress') {
-        const item = document.createElement('div');
-        item.className = 'event-item';
-        item.innerHTML = `
-          <span class="event-date">${app['Updated at'] || 'Recent'}</span>
-          <div class="event-details">
-            <span class="event-time">${app['Due date']}</span>
-            <strong>${app['Task']}</strong> - ${app['Status']}
-          </div>
+    // History Logic (Reversed for latest first)
+    const eventBox = document.getElementById('event-container');
+    eventBox.innerHTML = '';
+    [...data].reverse().forEach(item => {
+      if(item.Status !== 'Not-started') {
+        const ev = document.createElement('div');
+        ev.className = 'event';
+        ev.innerHTML = `
+          <span class="event-time">${item['Updated at'] || 'Pending'}</span>
+          <div class="event-desc"><strong>${item.Task}</strong><br>${item.Status}</div>
         `;
-        eventList.appendChild(item);
+        eventBox.appendChild(ev);
       }
     });
 
-    // 4. Build Sidebar Details
-    const meta = document.getElementById('meta-details');
-    meta.innerHTML = `
-      <div class="detail-row"><span class="detail-label">Assignee</span><span class="detail-value">${client['Assignee']}</span></div>
-      <div class="detail-row"><span class="detail-label">Service</span><span class="detail-value">Digital License Assist</span></div>
-      <div class="detail-row"><span class="detail-label">Last Update</span><span class="detail-value">${client['Updated at']}</span></div>
+    // Info Panel
+    document.getElementById('info-container').innerHTML = `
+      <div class="row"><span class="row-label">Reference</span><span class="row-value">#${current.Surname.substring(0,3).toUpperCase()}${Math.floor(Math.random()*1000)}</span></div>
+      <div class="row"><span class="row-label">Assigned to</span><span class="row-value">${current.Assignee}</span></div>
+      <div class="row"><span class="row-label">Next Deadline</span><span class="row-value">${current['Due date']}</span></div>
     `;
-    
-    document.getElementById('overall-status').textContent = apps[apps.length - 1]['Status'];
   }
 
-  function fetchData() {
-    fetch(CSV_URL + '?cb=' + Date.now())
-      .then(res => res.text())
-      .then(text => {
-        const apps = parseCSV(text);
-        renderUI(apps);
-      })
-      .catch(err => console.error("Error loading tracker:", err));
+  function init() {
+    fetch(CSV_URL + '?nocache=' + Date.now())
+      .then(r => r.text())
+      .then(t => updateTracker(parseCSV(t)))
+      .catch(e => console.error("Sync Error"));
   }
 
-  fetchData();
-  setInterval(fetchData, 60000);
+  init();
+  setInterval(init, 30000);
 </script>
 
 </body>
