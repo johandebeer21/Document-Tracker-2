@@ -3,85 +3,132 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Application Tracker</title>
+  <title>Document Tracker | Client Portal</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     :root {
-      --primary: #10b981;
-      --bg: #ffffff;
-      --text: #1a1a1a;
-      --text-muted: #71717a;
-      --border: #f4f4f5;
+      --primary: #10b981; /* Corporate Green */
+      --primary-dark: #059669;
+      --brand-dark: #0f172a; /* Slate/Navy for corporate feel */
+      --bg-page: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
     }
 
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background-color: #f4f4f5; margin: 0; padding: 12px; color: var(--text); line-height: 1.4; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg-page); margin: 0; color: var(--text-main); -webkit-font-smoothing: antialiased; }
 
-    .container { max-width: 700px; margin: 0 auto; background: var(--bg); border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden; }
+    /* Top Navigation Bar */
+    .top-nav { background-color: var(--brand-dark); color: #ffffff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .nav-brand { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; }
+    .nav-portal { font-size: 0.85rem; font-weight: 500; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* Main Status Header */
-    .header-main { text-align: center; padding: 35px 20px 20px; border-bottom: 1px solid var(--border); }
-    .header-main h1 { margin: 0; font-size: 2rem; font-weight: 800; color: #000; }
-    .header-main p { margin: 6px 0; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px; }
+    .wrapper { padding: 20px; max-width: 1000px; margin: 0 auto; }
+    .card { background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px; }
 
-    .refresh-row { display: flex; justify-content: flex-end; padding: 10px 20px; }
-    .refresh-btn { font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text); opacity: 0.7; }
+    /* Header Section */
+    .status-header { padding: 30px 24px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
+    .status-badge { display: inline-block; background: #ecfdf5; color: var(--primary-dark); padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; }
+    .status-header h1 { margin: 0 0 16px 0; font-size: 2.2rem; font-weight: 800; text-transform: uppercase; color: var(--brand-dark); }
+    
+    .client-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; font-size: 0.9rem; font-weight: 500; color: var(--text-muted); }
+    .meta-item { background: var(--bg-page); padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); }
+    .meta-item strong { color: var(--brand-dark); }
+
+    .refresh-btn { position: absolute; top: 20px; right: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 4px; transition: color 0.2s; }
+    .refresh-btn:hover { color: var(--brand-dark); }
 
     /* Stepper Section */
-    .stepper-container { padding: 25px 30px; }
-    .stepper { display: flex; flex-direction: column; gap: 28px; position: relative; }
-    .stepper::before { content: ""; position: absolute; left: 11px; top: 10px; bottom: 10px; width: 2px; border-left: 2px dashed #e4e4e7; }
-
-    .step { display: flex; align-items: flex-start; gap: 20px; position: relative; z-index: 1; }
-    .step-circle { width: 24px; height: 24px; background: white; border: 2px solid #e4e4e7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 2px; }
+    .stepper-container { padding: 30px 24px; background: var(--card-bg); }
+    .stepper { display: flex; flex-direction: column; position: relative; padding-left: 20px; border-left: 2px solid var(--border); gap: 30px; margin-left: 10px; }
+    
+    .step { display: flex; align-items: flex-start; position: relative; margin-left: -33px; }
+    .step-circle { width: 24px; height: 24px; background: white; border: 2px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: transparent; z-index: 2; margin-top: -2px; }
     .step.done .step-circle { background: var(--primary); border-color: var(--primary); color: white; }
+    .step.active .step-circle { border-color: var(--primary); border-width: 4px; }
     
-    .step-content { flex-grow: 1; }
-    .step-title { font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.02em; }
-    .step-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .step-content { margin-left: 20px; }
+    .step-title { font-weight: 700; font-size: 0.95rem; color: var(--brand-dark); text-transform: uppercase; }
+    .step-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
 
-    /* Tracking Events History */
-    .history-section { padding: 25px; background-color: #fafafa; border-top: 8px solid #f4f4f5; }
-    .history-section h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 20px; color: #000; }
-
-    .event-log { border-left: 2px dashed #e4e4e7; margin-left: 8px; padding-left: 25px; position: relative; }
-    
-    .day-marker { font-weight: 800; font-size: 1.05rem; margin-bottom: 20px; display: block; color: #000; }
-    .day-marker::before { content: "📍 "; }
-
-    .event-item { margin-bottom: 25px; }
-    /* FIXED: Using column layout on mobile to prevent overlap */
-    .event-row { display: flex; flex-direction: column; gap: 4px; }
-    .event-time { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
-    .event-title { font-weight: 700; font-size: 0.95rem; color: #111; }
-    .event-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 1px; }
-
-    @media (min-width: 600px) {
-        .event-row { flex-direction: row; gap: 20px; }
-        .event-time { min-width: 80px; }
+    /* Desktop Stepper Override */
+    @media (min-width: 768px) {
+      .stepper { flex-direction: row; justify-content: space-between; border-left: none; padding-left: 0; margin-left: 0; gap: 0; }
+      .stepper::before { content: ""; position: absolute; top: 10px; left: 30px; right: 30px; height: 2px; background: var(--border); z-index: 1; }
+      .step { flex-direction: column; align-items: center; text-align: center; margin-left: 0; flex: 1; }
+      .step-content { margin-left: 0; margin-top: 12px; }
+      .step-circle { margin-top: 0; }
     }
+
+    /* Bottom Grid (History & Details) */
+    .bottom-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 768px) { .bottom-grid { grid-template-columns: 2fr 1fr; } }
+
+    /* Section Titles */
+    .section-title { font-size: 1rem; font-weight: 700; color: var(--brand-dark); border-bottom: 1px solid var(--border); padding: 20px 24px; margin: 0; background: #f8fafc; border-radius: 8px 8px 0 0; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Tracking Events Feed */
+    .events-feed { padding: 24px; }
+    .day-group { margin-bottom: 25px; }
+    .day-header { font-weight: 700; font-size: 0.9rem; color: var(--brand-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .day-header::before { content: ""; display: block; width: 8px; height: 8px; background: var(--border); border-radius: 50%; }
+
+    .event-row { display: flex; margin-bottom: 16px; padding-left: 16px; border-left: 2px solid #f1f5f9; }
+    .event-time { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; width: 85px; flex-shrink: 0; }
+    .event-details { display: flex; flex-direction: column; }
+    .event-name { font-weight: 700; font-size: 0.95rem; color: var(--brand-dark); }
+    .event-status { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* Client Sidebar */
+    .sidebar-details { padding: 24px; }
+    .detail-row { display: flex; flex-direction: column; margin-bottom: 16px; }
+    .detail-row:last-child { margin-bottom: 0; }
+    .detail-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .detail-value { font-size: 0.95rem; font-weight: 600; color: var(--brand-dark); }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header-main">
-    <h1 id="top-status">LOADING...</h1>
-    <p id="waybill-label">REF: --</p>
+<nav class="top-nav">
+  <div class="nav-brand">DOCUMENT TRACKER</div>
+  <div class="nav-portal">Client Portal</div>
+</nav>
+
+<div class="wrapper">
+  
+  <div class="card">
+    <div class="status-header">
+      <div class="refresh-btn" onclick="fetchData()">↻ Refresh</div>
+      <div class="status-badge">Live Status</div>
+      <h1 id="main-status">UPDATING...</h1>
+      
+      <div class="client-meta">
+        <div class="meta-item">Ref: <strong id="head-ref">---</strong></div>
+        <div class="meta-item">Client: <strong id="head-client">---</strong></div>
+      </div>
+    </div>
+
+    <div class="stepper-container">
+      <div class="stepper" id="stepper-box"></div>
+    </div>
   </div>
 
-  <div class="refresh-row">
-    <div class="refresh-btn" onclick="fetchData()">↻ Refresh</div>
-  </div>
+  <div class="bottom-grid">
+    
+    <div class="card">
+      <h3 class="section-title">Tracking Events</h3>
+      <div class="events-feed" id="history-box"></div>
+    </div>
 
-  <div class="stepper-container">
-    <div class="stepper" id="stepper-box"></div>
-  </div>
+    <div class="card">
+      <h3 class="section-title">Application Details</h3>
+      <div class="sidebar-details" id="sidebar-box">
+        </div>
+    </div>
 
-  <div class="history-section">
-    <h3>Tracking events</h3>
-    <div class="event-log" id="history-box"></div>
   </div>
 </div>
 
@@ -100,17 +147,29 @@
   }
 
   function render(data) {
-    const latest = data[data.length - 1];
-    const client = data[0];
-    
-    // Header logic: Show the "Done" or "In-progress" big, then the application type below it
-    document.getElementById('top-status').textContent = latest.Status.toUpperCase();
-    document.getElementById('waybill-label').textContent = `REF: ${client.Surname.toUpperCase()}-${client.Name[0]}${Math.floor(Math.random()*1000)}`;
+    if (!data || data.length === 0) return;
 
-    // Render Stepper
+    const client = data[0];
+    const activeTasks = data.filter(d => d.Status === 'Done' || d.Status === 'In-progress');
+    const currentTask = activeTasks.length > 0 ? activeTasks[activeTasks.length - 1] : data[0];
+
+    // 1. Populate Header
+    document.getElementById('main-status').textContent = currentTask.Status;
+    document.getElementById('head-ref').textContent = `${client.Surname.toUpperCase()}-${client.Name.charAt(0)}313`;
+    document.getElementById('head-client').textContent = `${client.Name} ${client.Surname}`;
+
+    // 2. Populate Sidebar Details
+    const sidebar = document.getElementById('sidebar-box');
+    sidebar.innerHTML = `
+      <div class="detail-row"><span class="detail-label">Application Type</span><span class="detail-value">${client['Application type'] || '-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Assigned Consultant</span><span class="detail-value">${client['Assignee'] || '-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Last Updated</span><span class="detail-value">${currentTask['Updated at'] || '-'}</span></div>
+    `;
+
+    // 3. Render Stepper
     const stepperBox = document.getElementById('stepper-box');
     stepperBox.innerHTML = '';
-    data.forEach(item => {
+    data.forEach((item) => {
       const isDone = item.Status === 'Done';
       const isCurrent = item.Status === 'In-progress';
       const stepDiv = document.createElement('div');
@@ -118,45 +177,43 @@
       stepDiv.innerHTML = `
         <div class="step-circle">${isDone ? '✓' : ''}</div>
         <div class="step-content">
-          <span class="step-title">${item.Task}</span>
-          <span class="step-meta">${isDone ? item['Updated at'] : (isCurrent ? 'In Progress...' : 'Pending')}</span>
+          <div class="step-title">${item.Task}</div>
         </div>
       `;
       stepperBox.appendChild(stepDiv);
     });
 
-    // Render History
+    // 4. Render History
     const historyBox = document.getElementById('history-box');
     historyBox.innerHTML = '';
     
-    // Grouping by Date
     let currentGroupDate = "";
     
     [...data].reverse().forEach(item => {
       if (item.Status !== 'Not-started') {
         const itemDate = item['Updated at'] || "Current Status";
         
+        // Date Header Grouping
         if (itemDate !== currentGroupDate) {
-          const marker = document.createElement('span');
-          marker.className = 'day-marker';
-          marker.textContent = itemDate;
-          historyBox.appendChild(marker);
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'day-group';
+          groupDiv.innerHTML = `<div class="day-header">${itemDate}</div>`;
+          historyBox.appendChild(groupDiv);
           currentGroupDate = itemDate;
         }
 
-        const eventItem = document.createElement('div');
-        eventItem.className = 'event-item';
-        
-        eventItem.innerHTML = `
-          <div class="event-row">
-            <span class="event-time">${item['Due date']}</span>
-            <div class="event-info">
-                <span class="event-title">${item.Task}</span>
-                <span class="event-sub">${item.Status === 'Done' ? 'Completed successfully' : 'Processing...'}</span>
-            </div>
+        // Event Row
+        const activeGroup = historyBox.lastElementChild;
+        const eventRow = document.createElement('div');
+        eventRow.className = 'event-row';
+        eventRow.innerHTML = `
+          <div class="event-time">${item['Due date'] || '--:--'}</div>
+          <div class="event-details">
+            <span class="event-name">${item.Task}</span>
+            <span class="event-status">${item.Status === 'Done' ? 'Completed successfully' : 'Processing step...'}</span>
           </div>
         `;
-        historyBox.appendChild(eventItem);
+        activeGroup.appendChild(eventRow);
       }
     });
   }
@@ -166,13 +223,13 @@
       .then(r => r.text())
       .then(t => render(parseCSV(t)))
       .catch(e => {
-          document.getElementById('top-status').textContent = "OFFLINE";
+          document.getElementById('main-status').textContent = "CONNECTION ERROR";
           console.error(e);
       });
   }
 
   fetchData();
-  setInterval(fetchData, 60000);
+  setInterval(fetchData, 60000); // Auto-refresh 60s
 </script>
 
 </body>
