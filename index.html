@@ -83,6 +83,40 @@
     .info-row { margin-bottom: 18px; }
     .info-label { font-size: 0.65rem; font-weight: 700; color: var(--clr-text-muted); text-transform: uppercase; display: block; margin-bottom: 4px; letter-spacing: 0.5px; }
     .info-value { font-size: 1rem; font-weight: 700; color: var(--clr-dark); }
+
+    /* --- SPLIT FOOTER STYLES --- */
+    .footer {
+      margin-top: 40px;
+      padding: 30px 24px;
+      border-top: 1px solid var(--clr-border);
+      background-color: #fff;
+    }
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .footer-left {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--clr-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .footer-right {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--clr-text-muted);
+    }
+    @media (max-width: 600px) {
+      .footer-content {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -120,6 +154,13 @@
   </div>
 </div>
 
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-left">Developed by Johan de Beer</div>
+    <div class="footer-right">Copyright &copy; 2026</div>
+  </div>
+</footer>
+
 <script>
   const CSV_URL = 'https://raw.githubusercontent.com/johandebeer21/Tracker-Demo/refs/heads/main/tracker2.csv';
 
@@ -143,12 +184,10 @@
   function render(data) {
     if (!data || data.length === 0) return;
 
-    // 1. Core Info (from first row)
     const client = data[0];
     const fullName = `${client.Name} ${client.Surname}`;
-    const refCode = `${client.Surname.toUpperCase()}-N313`; // Matches your ref pattern
+    const refCode = `${client.Surname.toUpperCase()}-N313`;
 
-    // 2. Identify Current Status (Last task that isn't "Not started")
     const activeTasks = data.filter(d => d.Status !== 'Not started');
     const latestTask = activeTasks.length > 0 ? activeTasks[activeTasks.length - 1] : data[0];
 
@@ -156,7 +195,6 @@
     document.getElementById('c-name').textContent = fullName;
     document.getElementById('c-ref').textContent = refCode;
 
-    // 3. Stepper Logic
     const stepperContainer = document.getElementById('stepper-ui');
     stepperContainer.innerHTML = '';
     data.forEach(item => {
@@ -169,13 +207,11 @@
       stepperContainer.innerHTML += stepHtml;
     });
 
-    // 4. Timeline History (Reverse order for Feed)
     const historyContainer = document.getElementById('history-ui');
     historyContainer.innerHTML = '';
     let currentUpdateDate = "";
 
     [...data].reverse().forEach(item => {
-      // Create date group header if Updated at exists
       const updateAt = item['Updated at'] || "AWAITING UPDATE";
       if (updateAt !== currentUpdateDate) {
         historyContainer.innerHTML += `<div class="update-header">🗓️ UPDATED: ${updateAt}</div>`;
@@ -196,7 +232,6 @@
       historyContainer.innerHTML += entryHtml;
     });
 
-    // 5. Case File Info
     document.getElementById('case-ui').innerHTML = `
       <div class="info-row"><span class="info-label">Application</span><span class="info-value">${client['Application type']}</span></div>
       <div class="info-row"><span class="info-label">Assigned To</span><span class="info-value">${latestTask['Assignee'] || 'Processing...'}</span></div>
@@ -211,7 +246,7 @@
   }
 
   start();
-  setInterval(start, 60000); // Auto-refresh every 60 seconds
+  setInterval(start, 60000);
 </script>
 </body>
 </html>
